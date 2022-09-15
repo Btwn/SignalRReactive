@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="content1">
+
+    </div>
+    <div id="content2">
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.9/signalr.min.js" integrity="sha512-QWRJOSq83Mq+hh/qZrG9Qe+gDfyAZfiTyIpn2tc5gRehrGlqYsbe1nX39FIhAUuGIdxB1Bv1fct4oEpCi7iEWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.5.6/rxjs.umd.min.js" integrity="sha512-yUlloKtrX4U41iKbaafsHrrwII0n1uAX9+3KzuaTjkfgLicBplGfr0vv7FtfwC5kgead1Dmr7sjunFFp0a+s9Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        const subject = new rxjs.Subject()
+
+        subject.subscribe(message => {
+            content1.innerHTML += `<div>${message}</div>`
+        })
+
+        subject.subscribe(message => {
+            content2.innerHTML += `<div>${message}</div>`
+        })
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/message')
+            .build();
+
+        connection.start()
+            .then(() => console.log("Se conecto"))
+            .catch(() => console.error(error.message))
+
+        connection.on("sendMessage", message => {
+            console.log(message)
+            subject.next(message)
+        })
+
+    </script>
+
+</body>
+</html>
